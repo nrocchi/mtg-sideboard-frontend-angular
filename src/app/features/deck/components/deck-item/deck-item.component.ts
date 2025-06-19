@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core'
 import { RouterModule } from '@angular/router'
 
 import { Deck } from '../../models/deck.model'
+import { DeckStateService } from '../../services/deck-state.service'
 
 /**
  * Individual deck card display
@@ -13,8 +14,9 @@ import { Deck } from '../../models/deck.model'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeckItemComponent {
+  private deckState = inject(DeckStateService)
+
   deck = input.required<Deck>()
-  delete = output<string>()
 
   // Local state
   showDeleteModal = signal(false)
@@ -27,11 +29,18 @@ export class DeckItemComponent {
   }
 
   /**
-   * Confirms deletion and emits event
+   * Confirms deletion and calls service directly
    */
   confirmDelete() {
-    this.delete.emit(this.deck().id)
-    this.showDeleteModal.set(false)
+    this.deckState.deleteDeckAndRefresh(this.deck().id).subscribe({
+      next: () => {
+        this.showDeleteModal.set(false)
+      },
+      error: () => {
+        // Error is handled in the service
+        this.showDeleteModal.set(false)
+      },
+    })
   }
 
   /**

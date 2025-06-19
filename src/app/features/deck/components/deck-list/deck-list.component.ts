@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, input } from '@angular/core'
 
 import { Deck } from '../../models/deck.model'
 import { DeckItemComponent } from '../deck-item/deck-item.component'
@@ -14,12 +14,4 @@ import { DeckItemComponent } from '../deck-item/deck-item.component'
 })
 export class DeckListComponent {
   decks = input.required<Deck[]>()
-  deleteDeck = output<string>()
-
-  /**
-   * Emits delete event to parent
-   */
-  onDeleteDeck(id: string) {
-    this.deleteDeck.emit(id)
-  }
 }

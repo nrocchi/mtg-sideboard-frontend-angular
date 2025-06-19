@@ -40,17 +40,6 @@ export class DeckContainerComponent {
   }
 
   /**
-   * Handles deck deletion from list
-   */
-  onDeleteDeck(id: string) {
-    this.deckState.deleteDeckAndRefresh(id).subscribe({
-      error: () => {
-        // Error handled in service
-      },
-    })
-  }
-
-  /**
    * Toggles the create form visibility
    */
   toggleCreateForm() {
