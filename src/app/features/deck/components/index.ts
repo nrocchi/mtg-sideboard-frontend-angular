@@ -1,0 +1,5 @@
+export * from './deck-container/deck-container.component'
+export * from './deck-detail/deck-detail.component'
+export * from './deck-form/deck-form.component'
+export * from './deck-item/deck-item.component'
+export * from './deck-list/deck-list.component'

@@ -1,0 +1,148 @@
+<div class="card bg-base-200 shadow-xl">
+  <div class="card-body">
+    @if (!forceAction()) {
+      <h3 class="card-title">Add Cards to Sideboard</h3>
+    }
+
+    <div class="alert alert-info mb-4">
+      <span>
+        @if (action() === 'IN') {
+          {{ remainingSlots() }} of {{ maxCardsIn() }} IN slots remaining
+        } @else {
+          {{ remainingSlots() }} of {{ maxCardsOut() }} OUT slots remaining
+        }
+      </span>
+    </div>
+
+    <div class="form-control">
+      <label class="label" for="card-search-input">
+        <span class="label-text">Search for cards</span>
+      </label>
+      <div class="relative">
+        <input
+          id="card-search-input"
+          type="text"
+          placeholder="Search for cards to add..."
+          class="input input-bordered w-full"
+          [value]="searchTerm()"
+          (input)="onSearchInput($event)"
+          (focus)="showDropdown.set(searchResults().length > 0)"
+        />
+
+        @if (searching()) {
+          <div class="absolute right-3 top-3">
+            <span class="loading loading-spinner loading-sm"></span>
+          </div>
+        }
+
+        @if (showDropdown() && searchResults().length > 0) {
+          <div
+            class="absolute z-10 w-full mt-1 max-h-60 overflow-auto bg-base-100 rounded-lg shadow-lg border border-base-300"
+          >
+            @for (card of searchResults(); track card.id) {
+              <button
+                type="button"
+                class="w-full text-left p-3 hover:bg-base-200 flex items-center gap-3 transition-colors"
+                (click)="selectCard(card)"
+              >
+                @if (card.image_uris?.small) {
+                  <img
+                    [src]="card.image_uris!.small"
+                    alt="{{ card.name }}"
+                    class="w-12 h-16 object-cover rounded"
+                  />
+                }
+                <div class="flex-1">
+                  <div class="font-medium" [innerHTML]="card.name | manaSymbol"></div>
+                  <div class="text-sm opacity-70">
+                    {{ card.type_line }}
+                    @if (card.mana_cost) {
+                      <span class="ml-2" [innerHTML]="card.mana_cost | manaSymbol"></span>
+                    }
+                  </div>
+                </div>
+              </button>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    @if (selectedCard()) {
+      <div class="mt-4 p-4 bg-base-300 rounded-lg">
+        <div class="flex items-center gap-4">
+          @if (selectedCard()!.image_uris?.normal) {
+            <img
+              [src]="selectedCard()!.image_uris!.normal"
+              alt="{{ selectedCard()!.name }}"
+              class="w-32 h-44 object-cover rounded"
+            />
+          }
+          <div class="flex-1">
+            <h4 class="font-semibold text-lg" [innerHTML]="selectedCard()!.name | manaSymbol"></h4>
+            <p class="text-sm opacity-70 mb-2">{{ selectedCard()!.type_line }}</p>
+            @if (selectedCard()!.oracle_text) {
+              <p class="text-sm mb-2">{{ selectedCard()!.oracle_text }}</p>
+            }
+
+            <div class="flex gap-4 items-end">
+              <div class="form-control">
+                <label class="label" for="quantity-input">
+                  <span class="label-text">Quantity</span>
+                </label>
+                <input
+                  id="quantity-input"
+                  type="number"
+                  min="1"
+                  [max]="remainingSlots() > 4 ? 4 : remainingSlots()"
+                  class="input input-bordered input-sm w-20"
+                  [value]="quantity()"
+                  (input)="onQuantityInput($event)"
+                />
+              </div>
+
+              @if (!forceAction()) {
+                <div class="form-control">
+                  <div class="label">
+                    <span class="label-text">Action</span>
+                  </div>
+                  <div class="btn-group">
+                    <button
+                      type="button"
+                      class="btn btn-sm"
+                      [class.btn-success]="action() === 'IN'"
+                      [class.btn-outline]="action() !== 'IN'"
+                      (click)="setAction('IN')"
+                    >
+                      IN
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-sm"
+                      [class.btn-error]="action() === 'OUT'"
+                      [class.btn-outline]="action() !== 'OUT'"
+                      (click)="setAction('OUT')"
+                    >
+                      OUT
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <div class="card-actions justify-end mt-4">
+      <button (click)="onCancel()" class="btn btn-ghost">Cancel</button>
+      <button
+        (click)="onAdd()"
+        class="btn btn-primary"
+        [disabled]="!selectedCard() || !canAddCards()"
+      >
+        Add {{ action() === 'IN' ? 'In' : 'Out' }}
+      </button>
+    </div>
+  </div>
+</div>

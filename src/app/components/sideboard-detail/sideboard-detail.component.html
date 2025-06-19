@@ -1,0 +1,382 @@
+<div class="container mx-auto p-4">
+  @if (loading() && !sideboard()) {
+    <div class="flex justify-center items-center min-h-[50vh]">
+      <span class="loading loading-spinner loading-lg"></span>
+    </div>
+  }
+
+  @if (sideboard()) {
+    <div class="mb-6">
+      <div class="breadcrumbs text-sm">
+        <ul>
+          <li><a routerLink="/">Decks</a></li>
+          @if (sideboard()!.deck) {
+            <li>
+              <a [routerLink]="['/deck', sideboard()!.deck!.id]">{{ sideboard()!.deck!.name }}</a>
+            </li>
+            <li>
+              <a [routerLink]="['/sideboard', sideboard()!.deck!.id]">Sideboards</a>
+            </li>
+          }
+          <li>{{ sideboard()!.matchup }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card bg-base-200 shadow-xl mb-6">
+      <div class="card-body">
+        <div class="flex justify-between items-start">
+          <div class="flex-1">
+            <h1 class="card-title text-3xl mb-2">{{ sideboard()!.matchup }}</h1>
+            <div class="flex gap-2 mb-4">
+              @if (sideboard()!.deck) {
+                <div class="badge badge-primary">{{ sideboard()!.deck!.name }}</div>
+              }
+            </div>
+            @if (sideboard()!.description) {
+              <p class="text-base-content/80">{{ sideboard()!.description }}</p>
+            }
+          </div>
+
+          <div class="form-control">
+            <label class="label" for="configuration-select">
+              <span class="label-text">Configuration</span>
+            </label>
+            <select
+              id="configuration-select"
+              class="select select-bordered"
+              [value]="currentConfiguration()"
+              (change)="setConfiguration($any($event.target).value)"
+            >
+              <option value="play">On the Play</option>
+              <option value="draw">On the Draw</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="stats shadow mt-4">
+          <div class="stat">
+            <div class="stat-title">Cards In</div>
+            <div class="stat-value text-success">{{ totalIn() }}</div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">Cards Out</div>
+            <div class="stat-value text-error">{{ totalOut() }}</div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">Net Change</div>
+            <div class="stat-value" [class.text-warning]="totalIn() !== totalOut()">
+              {{ totalIn() - totalOut() }}
+            </div>
+          </div>
+        </div>
+
+        @if (totalIn() !== totalOut()) {
+          <div class="alert alert-warning mt-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="stroke-current shrink-0 h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+            <span>Warning: The number of cards in and out don't match!</span>
+          </div>
+        }
+
+        <div class="card-actions justify-between mt-6">
+          <a
+            [routerLink]="['/sideboard', sideboard()!.deck?.id || sideboard()!.deckId]"
+            class="btn btn-ghost"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-1"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            Back to Sideboards
+          </a>
+
+          <div class="flex gap-2">
+            <button (click)="showAddCardIn()" class="btn btn-success" [disabled]="!canAddCardsIn()">
+              Add Cards IN
+            </button>
+            <button (click)="showAddCardOut()" class="btn btn-error" [disabled]="!canAddCardsOut()">
+              Add Cards OUT
+            </button>
+            <button (click)="deleteSideboard()" class="btn btn-outline btn-error">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    @if (showAddCard() && addCardMode()) {
+      <div class="mb-6">
+        <div class="card bg-base-200 shadow-xl">
+          <div class="card-body">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="card-title">
+                Add Cards {{ addCardMode() }}
+                <span
+                  class="badge"
+                  [class.badge-success]="addCardMode() === 'IN'"
+                  [class.badge-error]="addCardMode() === 'OUT'"
+                >
+                  {{ addCardMode() }}
+                </span>
+              </h3>
+              <button class="btn btn-sm btn-ghost" (click)="cancelAddCard()">✕</button>
+            </div>
+            <app-sideboard-card-add
+              [maxCardsIn]="sideboardLimitIn()"
+              [maxCardsOut]="sideboardLimitOut()"
+              [currentCountIn]="totalIn()"
+              [currentCountOut]="totalOut()"
+              [forceAction]="addCardMode()"
+              (addCard)="onAddCard($event)"
+            />
+          </div>
+        </div>
+      </div>
+    }
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="card bg-base-200 shadow-xl">
+        <div class="card-body">
+          <h2 class="card-title text-success">
+            Cards In ({{ totalIn() }})
+            <span class="text-sm font-normal text-base-content/60">/ {{ sideboardLimitIn() }}</span>
+          </h2>
+          @if (loading() && sideboard()) {
+            <div class="flex justify-center py-8">
+              <span class="loading loading-spinner loading-md"></span>
+            </div>
+          } @else if (cardsIn().length === 0) {
+            <p class="text-base-content/60">No cards to bring in</p>
+          } @else {
+            <div class="space-y-2">
+              @for (entry of cardsIn(); track entry.id) {
+                <div
+                  class="flex items-center gap-3 p-3 bg-base-300 rounded-lg hover:bg-base-200 transition-colors"
+                >
+                  @if (entry.card.imageUris?.small) {
+                    <button
+                      class="btn btn-ghost p-0 h-auto min-h-0"
+                      (click)="showCard(entry.card)"
+                      type="button"
+                    >
+                      <img
+                        [src]="entry.card.imageUris!.small"
+                        alt="{{ entry.card.name }}"
+                        class="w-12 h-16 object-cover rounded"
+                      />
+                    </button>
+                  }
+                  <button
+                    class="flex-1 btn btn-ghost justify-start h-auto min-h-0 p-2 text-left"
+                    (click)="showCard(entry.card)"
+                    type="button"
+                  >
+                    <div>
+                      <div class="font-medium flex items-center gap-2">
+                        <span class="badge badge-sm badge-neutral font-bold">{{
+                          entry.quantity
+                        }}</span>
+                        <span [innerHTML]="entry.card.name | manaSymbol"></span>
+                        @if (entry.card.manaCost) {
+                          <span
+                            class="opacity-70"
+                            [innerHTML]="entry.card.manaCost | manaSymbol"
+                          ></span>
+                        }
+                      </div>
+                      <div class="text-sm text-base-content/60 ml-7">
+                        {{ entry.card.typeLine }}
+                      </div>
+                    </div>
+                  </button>
+                  <div class="flex items-center gap-1">
+                    <button
+                      class="btn btn-xs btn-ghost"
+                      (click)="updateEntryQuantity(entry, -1)"
+                      [disabled]="entry.quantity <= 1"
+                    >
+                      -
+                    </button>
+                    <span class="w-8 text-center">{{ entry.quantity }}</span>
+                    <button
+                      class="btn btn-xs btn-ghost"
+                      (click)="updateEntryQuantity(entry, 1)"
+                      [disabled]="entry.quantity >= 4 || totalIn() >= sideboardLimitIn()"
+                    >
+                      +
+                    </button>
+                    <button
+                      class="btn btn-xs btn-ghost text-error ml-2"
+                      (click)="removeEntry(entry)"
+                      [disabled]="false"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="card bg-base-200 shadow-xl">
+        <div class="card-body">
+          <h2 class="card-title text-error">
+            Cards Out ({{ totalOut() }})
+            <span class="text-sm font-normal text-base-content/60"
+              >/ {{ sideboardLimitOut() }}</span
+            >
+          </h2>
+          @if (loading() && sideboard()) {
+            <div class="flex justify-center py-8">
+              <span class="loading loading-spinner loading-md"></span>
+            </div>
+          } @else if (cardsOut().length === 0) {
+            <p class="text-base-content/60">No cards to take out</p>
+          } @else {
+            <div class="space-y-2">
+              @for (entry of cardsOut(); track entry.id) {
+                <div
+                  class="flex items-center gap-3 p-3 bg-base-300 rounded-lg hover:bg-base-200 transition-colors"
+                >
+                  @if (entry.card.imageUris?.small) {
+                    <button
+                      class="btn btn-ghost p-0 h-auto min-h-0"
+                      (click)="showCard(entry.card)"
+                      type="button"
+                    >
+                      <img
+                        [src]="entry.card.imageUris!.small"
+                        alt="{{ entry.card.name }}"
+                        class="w-12 h-16 object-cover rounded"
+                      />
+                    </button>
+                  }
+                  <button
+                    class="flex-1 btn btn-ghost justify-start h-auto min-h-0 p-2 text-left"
+                    (click)="showCard(entry.card)"
+                    type="button"
+                  >
+                    <div>
+                      <div class="font-medium flex items-center gap-2">
+                        <span class="badge badge-sm badge-neutral font-bold">{{
+                          entry.quantity
+                        }}</span>
+                        <span [innerHTML]="entry.card.name | manaSymbol"></span>
+                        @if (entry.card.manaCost) {
+                          <span
+                            class="opacity-70"
+                            [innerHTML]="entry.card.manaCost | manaSymbol"
+                          ></span>
+                        }
+                      </div>
+                      <div class="text-sm text-base-content/60 ml-7">
+                        {{ entry.card.typeLine }}
+                      </div>
+                    </div>
+                  </button>
+                  <div class="flex items-center gap-1">
+                    <button
+                      class="btn btn-xs btn-ghost"
+                      (click)="updateEntryQuantity(entry, -1)"
+                      [disabled]="entry.quantity <= 1"
+                    >
+                      -
+                    </button>
+                    <span class="w-8 text-center">{{ entry.quantity }}</span>
+                    <button
+                      class="btn btn-xs btn-ghost"
+                      (click)="updateEntryQuantity(entry, 1)"
+                      [disabled]="entry.quantity >= 4 || totalOut() >= sideboardLimitOut()"
+                    >
+                      +
+                    </button>
+                    <button
+                      class="btn btn-xs btn-ghost text-error ml-2"
+                      (click)="removeEntry(entry)"
+                      [disabled]="false"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Card Modal -->
+  @if (showCardModal() && selectedCard()) {
+    <app-card-modal [card]="selectedCard()!" (closeModal)="closeCardModal()" />
+  }
+
+  <!-- Delete Confirmation Modal -->
+  @if (showDeleteModal()) {
+    <div class="modal modal-open">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg">Confirm Deletion</h3>
+        <p class="py-4">
+          Are you sure you want to delete the sideboard for "{{ sideboard()?.matchup }}"? This
+          action cannot be undone.
+        </p>
+        <div class="modal-action">
+          <button class="btn btn-ghost" (click)="cancelDelete()">Cancel</button>
+          <button class="btn btn-error" (click)="confirmDelete()">Delete</button>
+        </div>
+      </div>
+      <button
+        class="modal-backdrop"
+        (click)="cancelDelete()"
+        type="button"
+        aria-label="Close modal"
+      ></button>
+    </div>
+  }
+
+  <!-- Remove Entry Confirmation Modal -->
+  @if (showRemoveEntryModal() && entryToRemove()) {
+    <div class="modal modal-open">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg">Confirm Removal</h3>
+        <p class="py-4">
+          Are you sure you want to remove {{ entryToRemove()!.card.name }} from the sideboard?
+        </p>
+        <div class="modal-action">
+          <button class="btn btn-ghost" (click)="cancelRemoveEntry()">Cancel</button>
+          <button class="btn btn-error" (click)="confirmRemoveEntry()">Remove</button>
+        </div>
+      </div>
+      <button
+        class="modal-backdrop"
+        (click)="cancelRemoveEntry()"
+        type="button"
+        aria-label="Close modal"
+      ></button>
+    </div>
+  }
+</div>

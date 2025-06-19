@@ -1,0 +1,171 @@
+<div class="card bg-base-200 shadow-xl">
+  <div class="card-body">
+    <div class="flex justify-between items-start">
+      <div>
+        <h3 class="card-title">{{ sideboard().matchup }}</h3>
+        @if (sideboard().description) {
+          <p class="text-sm opacity-70 mt-2">{{ sideboard().description }}</p>
+        }
+      </div>
+      <button (click)="onDelete($event)" class="btn btn-ghost btn-sm btn-square text-error">
+        ✕
+      </button>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- On the Play Changes -->
+    <div>
+      <h4 class="font-semibold mb-3">On the Play:</h4>
+      <div class="grid grid-cols-2 gap-4">
+        <!-- IN Column -->
+        <div>
+          <h5 class="text-success font-medium mb-2 flex items-center gap-2">
+            IN
+            <span class="badge badge-success badge-sm">{{ totalPlayIn() }}</span>
+          </h5>
+          @for (entry of playEntriesIn(); track entry.id) {
+            <button
+              class="text-sm mb-2 p-2 rounded hover:bg-base-300 cursor-pointer transition-colors w-full text-left"
+              (click)="showCard(entry.card)"
+              type="button"
+            >
+              <div class="flex items-center gap-2">
+                <span class="badge badge-sm badge-neutral font-bold">{{ entry.quantity }}</span>
+                <span [innerHTML]="entry.card.name | manaSymbol"></span>
+                @if (entry.card.manaCost) {
+                  <span class="opacity-70" [innerHTML]="entry.card.manaCost | manaSymbol"></span>
+                }
+              </div>
+            </button>
+          }
+          @if (playEntriesIn().length === 0) {
+            <div class="text-sm opacity-50 italic">No changes</div>
+          }
+        </div>
+
+        <!-- OUT Column -->
+        <div>
+          <h5 class="text-error font-medium mb-2 flex items-center gap-2">
+            OUT
+            <span class="badge badge-error badge-sm">{{ totalPlayOut() }}</span>
+          </h5>
+          @for (entry of playEntriesOut(); track entry.id) {
+            <button
+              class="text-sm mb-2 p-2 rounded hover:bg-base-300 cursor-pointer transition-colors w-full text-left"
+              (click)="showCard(entry.card)"
+              type="button"
+            >
+              <div class="flex items-center gap-2">
+                <span class="badge badge-sm badge-neutral font-bold">{{ entry.quantity }}</span>
+                <span [innerHTML]="entry.card.name | manaSymbol"></span>
+                @if (entry.card.manaCost) {
+                  <span class="opacity-70" [innerHTML]="entry.card.manaCost | manaSymbol"></span>
+                }
+              </div>
+            </button>
+          }
+          @if (playEntriesOut().length === 0) {
+            <div class="text-sm opacity-50 italic">No changes</div>
+          }
+        </div>
+      </div>
+    </div>
+
+    @if (drawEntriesIn().length > 0 || drawEntriesOut().length > 0) {
+      <div class="divider"></div>
+
+      <!-- On the Draw Changes -->
+      <div>
+        <h4 class="font-semibold mb-3">On the Draw:</h4>
+        <div class="grid grid-cols-2 gap-4">
+          <!-- IN Column -->
+          <div>
+            <h5 class="text-success font-medium mb-2 flex items-center gap-2">
+              IN
+              <span class="badge badge-success badge-sm">{{ totalDrawIn() }}</span>
+            </h5>
+            @for (entry of drawEntriesIn(); track entry.id) {
+              <button
+                class="text-sm mb-2 p-2 rounded hover:bg-base-300 cursor-pointer transition-colors w-full text-left"
+                (click)="showCard(entry.card)"
+                type="button"
+              >
+                <div class="flex items-center gap-2">
+                  <span class="badge badge-sm badge-neutral font-bold">{{ entry.quantity }}</span>
+                  <span [innerHTML]="entry.card.name | manaSymbol"></span>
+                  @if (entry.card.manaCost) {
+                    <span class="opacity-70" [innerHTML]="entry.card.manaCost | manaSymbol"></span>
+                  }
+                </div>
+              </button>
+            }
+            @if (drawEntriesIn().length === 0) {
+              <div class="text-sm opacity-50 italic">No changes</div>
+            }
+          </div>
+
+          <!-- OUT Column -->
+          <div>
+            <h5 class="text-error font-medium mb-2 flex items-center gap-2">
+              OUT
+              <span class="badge badge-error badge-sm">{{ totalDrawOut() }}</span>
+            </h5>
+            @for (entry of drawEntriesOut(); track entry.id) {
+              <button
+                class="text-sm mb-2 p-2 rounded hover:bg-base-300 cursor-pointer transition-colors w-full text-left"
+                (click)="showCard(entry.card)"
+                type="button"
+              >
+                <div class="flex items-center gap-2">
+                  <span class="badge badge-sm badge-neutral font-bold">{{ entry.quantity }}</span>
+                  <span [innerHTML]="entry.card.name | manaSymbol"></span>
+                  @if (entry.card.manaCost) {
+                    <span class="opacity-70" [innerHTML]="entry.card.manaCost | manaSymbol"></span>
+                  }
+                </div>
+              </button>
+            }
+            @if (drawEntriesOut().length === 0) {
+              <div class="text-sm opacity-50 italic">No changes</div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    <div class="divider"></div>
+
+    <div class="card-actions justify-end">
+      <button class="btn btn-primary" (click)="navigateToDetail()">Manage Sideboard</button>
+    </div>
+  </div>
+</div>
+
+<!-- Card Modal -->
+@if (selectedCard()) {
+  <app-card-modal [card]="selectedCard()!" (closeModal)="closeModal()" />
+}
+
+<!-- Delete Confirmation Modal -->
+@if (showDeleteModal()) {
+  <div class="modal modal-open">
+    <div class="modal-box">
+      <h3 class="font-bold text-lg">Confirm Deletion</h3>
+      <p class="py-4">
+        Are you sure you want to delete the sideboard for "{{ sideboard().matchup }}"? This action
+        cannot be undone.
+      </p>
+      <div class="modal-action">
+        <button class="btn btn-ghost" (click)="cancelDelete()">Cancel</button>
+        <button class="btn btn-error" (click)="confirmDelete()">Delete</button>
+      </div>
+    </div>
+    <button
+      class="modal-backdrop"
+      (click)="cancelDelete()"
+      type="button"
+      aria-label="Close modal"
+    ></button>
+  </div>
+}

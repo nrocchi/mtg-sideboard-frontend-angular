@@ -1,0 +1,36 @@
+<div class="form-control w-full">
+  <label class="label" for="searchCards">
+    <span class="label-text">Search Cards</span>
+  </label>
+  <input
+    id="searchCards"
+    [ngModel]="searchQuery()"
+    (ngModelChange)="onSearchChange($event)"
+    type="text"
+    placeholder="Search for cards..."
+    class="input input-bordered w-full"
+  />
+</div>
+
+@if (loading()) {
+  <div class="text-center py-2">
+    <span class="loading loading-spinner loading-sm"></span>
+  </div>
+}
+
+@if (searchResults().length > 0) {
+  <div class="mb-4 max-h-60 overflow-y-auto border border-base-300 rounded-lg p-2">
+    @for (card of searchResults(); track card.id) {
+      <div class="flex items-center justify-between p-2 hover:bg-base-300 rounded">
+        <div>
+          <span class="font-medium" [innerHTML]="card.name | manaSymbol"></span>
+          <span class="text-sm opacity-70 ml-2" [innerHTML]="card.mana_cost | manaSymbol"></span>
+        </div>
+        <div class="btn-group">
+          <button (click)="selectCard(card, 'IN')" class="btn btn-success btn-xs">+ In</button>
+          <button (click)="selectCard(card, 'OUT')" class="btn btn-error btn-xs">- Out</button>
+        </div>
+      </div>
+    }
+  </div>
+}

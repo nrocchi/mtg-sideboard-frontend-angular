@@ -1,0 +1,51 @@
+<div class="card bg-base-200 shadow-xl">
+  <div class="card-body">
+    <h2 class="card-title">Create New Deck</h2>
+    <div class="form-control w-full">
+      <label class="label" for="name">
+        <span class="label-text">Deck Name</span>
+      </label>
+      <input
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+        class="input input-bordered w-full"
+        id="name"
+        type="text"
+        placeholder="Enter deck name"
+      />
+    </div>
+    <div class="form-control w-full">
+      <label class="label" for="format">
+        <span class="label-text">Format</span>
+      </label>
+      <select
+        [ngModel]="format()"
+        (ngModelChange)="format.set($event)"
+        class="select select-bordered w-full"
+        id="format"
+      >
+        <option value="" disabled>Select format</option>
+        @for (fmt of formats; track fmt.value) {
+          <option [value]="fmt.value">{{ fmt.label }}</option>
+        }
+      </select>
+    </div>
+    <div class="form-control w-full">
+      <label class="label" for="description">
+        <span class="label-text">Description (Optional)</span>
+      </label>
+      <textarea
+        [ngModel]="description()"
+        (ngModelChange)="description.set($event)"
+        class="textarea textarea-bordered w-full"
+        id="description"
+        rows="3"
+        placeholder="Enter deck description"
+      ></textarea>
+    </div>
+    <div class="card-actions justify-end mt-4">
+      <button (click)="onCancel()" class="btn btn-ghost">Cancel</button>
+      <button (click)="onSubmit()" class="btn btn-success">Create Deck</button>
+    </div>
+  </div>
+</div>

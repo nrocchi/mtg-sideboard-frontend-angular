@@ -1,59 +1,33 @@
-# MtgSideboardFrontendAngular
+# MTG Sideboard Frontend Angular 19
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.14.
+Angular frontend for Magic: The Gathering sideboard management application.
 
-## Development server
+## Setup
 
-To start a local development server, run:
+1. Install dependencies:
 
-```bash
-ng serve
-```
+   ```bash
+   pnpm install
+   ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+2. Start the development server:
 
-## Code scaffolding
+   ```bash
+   pnpm start
+   ```
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+The application will be available at `http://localhost:4200`
 
-```bash
-ng generate component component-name
-```
+## Environment Configuration
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+To change the API URL, modify the `apiUrl` in:
 
-```bash
-ng generate --help
-```
+- `src/environments/environment.ts` (development)
+- `src/environments/environment.prod.ts` (production)
 
-## Building
+## Features
 
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- Create and manage MTG decks
+- Create sideboard plans for specific matchups
+- Search cards using Scryfall API
+- Track cards going in/out for each matchup

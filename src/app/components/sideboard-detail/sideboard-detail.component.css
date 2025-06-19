@@ -1,0 +1,18 @@
+/* Button group styling */
+.btn-xs {
+  height: 1.75rem;
+  min-height: 1.75rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  font-size: 0.75rem;
+}
+
+/* Card entry hover effects */
+.card-entry {
+  transition: all 0.2s ease-in-out;
+}
+
+.card-entry:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

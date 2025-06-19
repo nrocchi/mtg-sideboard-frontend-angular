@@ -1,0 +1,30 @@
+<div class="container mx-auto p-4">
+  <!-- Header with title and create button -->
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">My Decks</h1>
+    <button (click)="toggleCreateForm()" class="btn btn-primary">Create New Deck</button>
+  </div>
+
+  <!-- Error display -->
+  @if (error()) {
+    <div class="alert alert-error mb-4">
+      <span>{{ error()?.message }}</span>
+    </div>
+  }
+
+  <!-- Create deck form -->
+  @if (showCreateForm()) {
+    <div class="mb-4">
+      <app-deck-form (createDeck)="onCreateDeck($event)" (cancelForm)="onCancelCreate()" />
+    </div>
+  }
+
+  <!-- Loading state or deck list -->
+  @if (loading()) {
+    <div class="flex justify-center py-8">
+      <span class="loading loading-spinner loading-lg"></span>
+    </div>
+  } @else {
+    <app-deck-list [decks]="decks()" (deleteDeck)="onDeleteDeck($event)" />
+  }
+</div>

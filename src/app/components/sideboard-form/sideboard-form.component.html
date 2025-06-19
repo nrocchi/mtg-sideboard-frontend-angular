@@ -1,0 +1,88 @@
+<div class="card bg-base-200 shadow-xl">
+  <div class="card-body">
+    <h2 class="card-title">Create Sideboard</h2>
+
+    @if (remainingSlots() >= 0) {
+      <div class="alert alert-info mb-4">
+        <span>{{ remainingSlots() }} of 15 card slots remaining</span>
+      </div>
+    }
+
+    <div class="form-control w-full">
+      <label class="label" for="matchup">
+        <span class="label-text">Matchup</span>
+      </label>
+      <input
+        id="matchup"
+        [ngModel]="matchup()"
+        (ngModelChange)="matchup.set($event)"
+        type="text"
+        placeholder="e.g. vs Mono Red Aggro"
+        class="input input-bordered w-full"
+      />
+    </div>
+
+    <div class="form-control w-full">
+      <label class="label" for="description">
+        <span class="label-text">Description (Optional)</span>
+      </label>
+      <textarea
+        id="description"
+        [ngModel]="description()"
+        (ngModelChange)="description.set($event)"
+        rows="2"
+        placeholder="Strategy notes..."
+        class="textarea textarea-bordered w-full"
+      ></textarea>
+    </div>
+
+    <div class="divider"></div>
+
+    <app-card-search (cardSelected)="onCardSelected($event)" />
+
+    @if (entries().length > 0) {
+      <div class="mt-4">
+        <h3 class="font-bold mb-2">Sideboard Changes:</h3>
+        <div class="border border-base-300 rounded-lg p-2">
+          @for (entry of entries(); track $index; let i = $index) {
+            <div class="flex items-center justify-between p-2 hover:bg-base-300 rounded">
+              <div class="flex items-center gap-2">
+                <span
+                  [class.text-success]="entry.action === 'IN'"
+                  [class.text-error]="entry.action === 'OUT'"
+                  class="font-bold"
+                >
+                  {{ entry.action === 'IN' ? '+' : '-' }}
+                </span>
+                <input
+                  type="number"
+                  [ngModel]="entry.quantity"
+                  (ngModelChange)="updateQuantity(i, $event)"
+                  min="1"
+                  max="4"
+                  class="input input-bordered input-xs w-12"
+                />
+                <span>{{ entry.scryfallCard.name }}</span>
+              </div>
+              <button (click)="removeEntry(i)" class="btn btn-ghost btn-xs text-error">
+                Remove
+              </button>
+            </div>
+          }
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 mt-2 text-sm">
+          <div class="text-success">Total In: {{ totalIn() }} cards</div>
+          <div class="text-error">Total Out: {{ totalOut() }} cards</div>
+        </div>
+      </div>
+    }
+
+    <div class="card-actions justify-end mt-4">
+      <button (click)="onCancel()" class="btn btn-ghost">Cancel</button>
+      <button (click)="onSubmit()" [disabled]="!isValid()" class="btn btn-primary">
+        Create Sideboard
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,11 @@
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  @for (sideboard of sideboards(); track sideboard.id) {
+    <app-sideboard-item [sideboard]="sideboard" (delete)="onDeleteSideboard($event)" />
+  }
+</div>
+
+@if (sideboards().length === 0) {
+  <div class="text-center py-8">
+    <p class="text-base-content/60">No sideboards created yet for this deck.</p>
+  </div>
+}

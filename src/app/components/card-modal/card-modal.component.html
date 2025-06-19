@@ -1,0 +1,35 @@
+<div class="modal modal-open">
+  <div class="modal-box max-w-4xl">
+    <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" (click)="onClose()">
+      ✕
+    </button>
+
+    <div class="card-details">
+      <img
+        [src]="card().imageUris?.normal || card().imageUris?.large || ''"
+        [alt]="card().name"
+        class="card-image"
+      />
+
+      <div class="card-info">
+        <h2 [innerHTML]="card().name | manaSymbol"></h2>
+
+        <div class="card-meta">
+          <p>
+            <strong>Mana Cost:</strong>
+            <span [innerHTML]="card().manaCost || 'N/A' | manaSymbol"></span>
+          </p>
+          <p><strong>Type:</strong> {{ card().typeLine }}</p>
+          <p><strong>CMC:</strong> {{ card().cmc }}</p>
+        </div>
+
+        <div class="card-text" *ngIf="card().oracleText">
+          <p>{{ card().oracleText }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop">
+    <button (click)="onClose()">close</button>
+  </div>
+</div>

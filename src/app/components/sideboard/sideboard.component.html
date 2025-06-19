@@ -1,0 +1,66 @@
+<div class="container mx-auto p-4">
+  @if (deck()) {
+    <div class="mb-6">
+      <div class="breadcrumbs text-sm mb-4">
+        <ul>
+          <li><a routerLink="/">Decks</a></li>
+          <li>
+            <a [routerLink]="['/deck', deck()!.id]">{{ deck()!.name }}</a>
+          </li>
+          <li>Sideboards</li>
+        </ul>
+      </div>
+      <h1 class="text-3xl font-bold">{{ deck()!.name }} - Sideboards</h1>
+      <div class="badge badge-ghost">{{ deck()!.format }}</div>
+    </div>
+
+    <div class="mb-6 flex gap-2">
+      <a [routerLink]="['/deck', deck()!.id]" class="btn btn-ghost">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 mr-1"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+        Back to Deck
+      </a>
+      <button (click)="toggleCreateForm()" class="btn btn-success">
+        {{ showCreateForm() ? 'Cancel' : 'Create New Sideboard' }}
+      </button>
+    </div>
+
+    @if (showCreateForm()) {
+      <div class="mb-6">
+        <app-sideboard-form
+          [deckId]="deckId"
+          [deckFormat]="deck()!.format"
+          (createSideboard)="onCreateSideboard($event)"
+          (cancelForm)="toggleCreateForm()"
+        />
+      </div>
+    }
+
+    @if (loading()) {
+      <div class="flex justify-center py-8">
+        <span class="loading loading-spinner loading-lg"></span>
+      </div>
+    } @else {
+      <app-sideboard-list
+        [sideboards]="sideboards()"
+        (deleteSideboard)="onDeleteSideboard($event)"
+      />
+    }
+  } @else {
+    <div class="flex justify-center py-8">
+      <span class="loading loading-spinner loading-lg"></span>
+    </div>
+  }
+</div>

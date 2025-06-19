@@ -1,0 +1,80 @@
+@reference "../../../styles.css";
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.close-button:hover {
+  @apply bg-base-200;
+}
+
+.card-details {
+  display: flex;
+  gap: 30px;
+  padding: 30px;
+}
+
+.card-image {
+  width: 300px;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-info {
+  flex: 1;
+}
+
+.card-info h2 {
+  margin: 0 0 20px 0;
+  font-size: 24px;
+}
+
+.card-meta p {
+  margin: 5px 0;
+}
+
+.card-text {
+  margin: 20px 0;
+  padding: 15px;
+  @apply bg-base-200;
+  border-radius: 4px;
+}
+
+.card-stats {
+  margin: 20px 0;
+  font-size: 18px;
+}
+
+.card-flavor {
+  margin-top: 20px;
+  padding: 15px;
+  @apply border-l-4 border-base-300 bg-base-200;
+}
+
+.flavor-text {
+  font-style: italic;
+  @apply text-base-content/60;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .card-details {
+    flex-direction: column;
+  }
+  
+  .card-image {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+}

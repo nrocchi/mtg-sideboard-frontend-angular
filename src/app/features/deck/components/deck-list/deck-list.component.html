@@ -1,0 +1,11 @@
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  @for (deck of decks(); track deck.id) {
+    <app-deck-item [deck]="deck" (delete)="onDeleteDeck($event)" />
+  }
+</div>
+
+@if (decks().length === 0) {
+  <div class="text-center py-8">
+    <p class="text-base-content/60">No decks created yet. Create your first deck to get started!</p>
+  </div>
+}
